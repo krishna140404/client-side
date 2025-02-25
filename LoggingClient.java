@@ -1,7 +1,12 @@
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.json.*;
 
 public class LoggingClient {
@@ -82,9 +87,47 @@ public class LoggingClient {
         scanner.close();
     }
     
+    public void runAutomatedTests() {
+        System.out.println("Running automated tests...");
+        System.out.println("Client ID: " + clientId);
+        
+        // Test different log levels
+        testLogLevels();
+        
+        // Test rate limiting
+        testRateLimiting();
+        
+        // Test long messages
+        testLongMessages();
+        
+        System.out.println("Automated tests completed.");
     }
     
-
+    private void testLogLevels() {
+        String[] levels = {"DEBUG", "INFO", "WARN", "ERROR"};
+        for (String level : levels) {
+            String response = sendLog(level, "Test message for " + level + " level");
+            System.out.println(level + " test: " + response);
+        }
+    }
+    
+    private void testRateLimiting() {
+        System.out.println("\nTesting rate limiting...");
+        for (int i = 0; i < 20; i++) {
+            String response = sendLog("INFO", "Rate limit test message " + i);
+            System.out.println("Message " + i + ": " + response);
+        }
+    }
+    
+    private void testLongMessages() {
+        StringBuilder longMessage = new StringBuilder();
+        for (int i = 0; i < 2000; i++) {
+            longMessage.append("Long message test ");
+        }
+        String response = sendLog("INFO", longMessage.toString());
+        System.out.println("Long message test: " + response);
+    }
+    
     public static void main(String[] args) {
         if (args.length < 3) {
             System.out.println("Usage: java LoggingClient <host> <port> <mode>");
@@ -99,15 +142,11 @@ public class LoggingClient {
         LoggingClient client = new LoggingClient(host, port);
         
         if (mode.equals("-m")) {
-            //client.runManualTest();
+            client.runManualTest();
         } else if (mode.equals("-a")) {
-            //client.runAutomatedTests();
+            client.runAutomatedTests();
         } else {
             System.out.println("Invalid mode. Use -m for manual or -a for automated tests");
         }
-
-        // Test JSON object creation
-        JSONObject logMessage = client.createLogMessage("DEBUG", "test message");
-        System.out.println(logMessage.toString(4));
     }
 }
