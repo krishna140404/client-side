@@ -382,7 +382,10 @@ public class LoggingClient {
     private JSONObject createLogMessage(String level, String message) {
         JSONObject json = new JSONObject();
         json.put("client_id", clientId);
-        json.put("timestamp", Instant.now().toString());
+         ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
+        String timestamp = now.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        json.put("timestamp", timestamp);
+
         json.put("level", level);
         json.put("message", message);
         return json;
