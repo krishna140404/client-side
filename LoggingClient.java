@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 Kisu
 kisu14
@@ -358,6 +359,8 @@ Xyanon
 xyanon
  
 technically this is my alt account
+=======
+>>>>>>> ac32dc5 (updated code)
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -498,6 +501,7 @@ public class LoggingClient {
         System.out.println(logMessage.toString(4));  // print with indentation
     }
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 //implementing header files and json files for the code
@@ -698,3 +702,5 @@ public class LoggingClient {
 client-v2.java
 5 KB
 >>>>>>> 9ffcc83 (updated code with testing the object creation)
+=======
+>>>>>>> ac32dc5 (updated code)
