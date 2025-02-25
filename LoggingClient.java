@@ -1,7 +1,12 @@
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.json.*;
 
 public class LoggingClient {
@@ -18,16 +23,26 @@ public class LoggingClient {
     
     private JSONObject createLogMessage(String level, String message) {
         JSONObject json = new JSONObject();
+        final int MAX_MESSAGE_LENGTH = 3090;
+    
+    if (message.length() > MAX_MESSAGE_LENGTH) {
+        String truncationNotice = "[MESSAGE TRUNCATED; ORIGINAL LENGTH: " + message.length() + "]";
+        int truncatedLength = MAX_MESSAGE_LENGTH - truncationNotice.length();
+        message = message.substring(0, truncatedLength) + truncationNotice;
+    }
+
         json.put("client_id", clientId);
-         ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
+        
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
         String timestamp = now.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         json.put("timestamp", timestamp);
 
         json.put("level", level);
+
         json.put("message", message);
         return json;
     }
-
+    
     public String sendLog(String level, String message) {
         try (Socket socket = new Socket(host, port)) {
             JSONObject logMessage = createLogMessage(level, message);
@@ -44,7 +59,7 @@ public class LoggingClient {
             return "Error: " + e.getMessage();
         }
     }
-
+    
     public void runManualTest() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Client ID: " + clientId);
@@ -71,7 +86,7 @@ public class LoggingClient {
         
         scanner.close();
     }
-
+    
     public void runAutomatedTests() {
         System.out.println("Running automated tests...");
         System.out.println("Client ID: " + clientId);
@@ -106,7 +121,7 @@ public class LoggingClient {
     
     private void testLongMessages() {
         StringBuilder longMessage = new StringBuilder();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 2000; i++) {
             longMessage.append("Long message test ");
         }
         String response = sendLog("INFO", longMessage.toString());
@@ -133,11 +148,5 @@ public class LoggingClient {
         } else {
             System.out.println("Invalid mode. Use -m for manual or -a for automated tests");
         }
-
-        // Test JSON object creation
-        JSONObject logMessage = client.createLogMessage("DEBUG", "test message");
-
-        // Print the JSON object
-        System.out.println(logMessage.toString(4));  // print with indentation
     }
 }
